@@ -24,5 +24,6 @@ defmodule LunchDetectiveServer.Router do
     pipe_through :api
     resources "/lunch_groups", LunchGroupController
     resources "/lunchers", LuncherController
+    resources "/lunches", LunchController
   end
 end
