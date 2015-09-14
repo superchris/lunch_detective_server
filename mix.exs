@@ -30,8 +30,8 @@ defmodule LunchDetectiveServer.Mixfile do
   # Type `mix help deps` for examples and options
   defp deps do
     [{:phoenix, "~> 0.17"},
-    {:oauther, "~> 1.0.1"},
     {:httpoison, "~> 0.7.2"},
+    {:exyelp, ">= 0.0.2"},
     {:hexate,  ">= 0.5.0"},
      {:phoenix_ecto, "~> 1.1"},
      {:postgrex, ">= 0.0.0"},

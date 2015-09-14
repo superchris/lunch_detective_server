@@ -74,19 +74,9 @@ defmodule MyOauth do
 
   defp base_string(verb, url, params) do
     {base_url, q_params} = parse_url(url)
-    base = [verb, base_url, normalize_params(params, q_params)]
+    [String.upcase(verb), base_url, normalize_params(params, q_params)]
       |> Enum.map_join("&", &percent_encode/1)
-    param_map = Enum.into params, %{}
-    # oauth_timestamp = param_map["oauth_timestamp"]
-    # oauth_nonce = param
-    IO.puts "base_string is #{base}"
-    actual = "GET&http%3A%2F%2Fapi.yelp.com%2Fv2%2Fsearch&limit%3D16%26location%3DSan%2520Francisco%26oauth_consumer_key%3DoHIOcKmiG_wxWTxXAc95Iw%26oauth_nonce%3D#{param_map["oauth_nonce"]}%26oauth_signature_method%3DHMAC-SHA1%26oauth_timestamp%3D#{param_map["oauth_timestamp"]}%26oauth_token%3D0rSlHPN1wXjGNRsUVbNZpDIq929RAoMA%26oauth_version%3D1.0%26term%3Dtacos"
-    IO.puts "should be #{actual}"
-    base
   end
-
-  defp normalize(verb) when is_binary(verb),
-    do: String.upcase(verb)
 
   defp parse_url(url) do
     uri = URI.parse(url)
@@ -106,7 +96,6 @@ defmodule MyOauth do
 
   defp nonce do
     :crypto.rand_bytes(16) |> Hexate.encode
-    # "bba486ac64754ab57eb24004215e6cb5"
   end
 
   defp timestamp do
