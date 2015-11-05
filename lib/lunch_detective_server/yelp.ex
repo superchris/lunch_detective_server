@@ -13,7 +13,7 @@ defmodule LunchDetectiveServer.Yelp do
     }
   end
 
-  def search do
-    Exyelp.search %{term: "Chili", location: "Cincinnati"}, creds
+  def search(term) do
+    Exyelp.search %{term: term, location: "Cincinnati"}, creds
   end
 end

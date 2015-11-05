@@ -13,6 +13,8 @@ defmodule LunchDetectiveServer.LunchView do
     %{id: lunch.id,
       title: lunch.title,
       url: lunch.url,
+      recommendation: lunch.recommendation,
+      votes: Enum.map(lunch.votes, &(&1.id)),
       lunch_group_id: lunch.lunch_group_id}
   end
 end

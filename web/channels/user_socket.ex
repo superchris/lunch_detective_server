@@ -3,6 +3,7 @@ defmodule LunchDetectiveServer.UserSocket do
 
   ## Channels
   # channel "rooms:*", LunchDetectiveServer.RoomChannel
+  channel "lunch:updates", LunchDetectiveServer.LunchChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

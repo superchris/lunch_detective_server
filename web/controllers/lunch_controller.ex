@@ -8,18 +8,18 @@ defmodule LunchDetectiveServer.LunchController do
   plug :scrub_params, "lunch" when action in [:create, :update]
 
   def index(conn, _params) do
-    lunches = Repo.all(Lunch)
+    lunches = Repo.all(Lunch) |> Repo.preload([:votes])
     render(conn, "index.json", lunches: lunches)
   end
 
   def create(conn, %{"lunch" => lunch_params}) do
-    changeset = Lunch.changeset(%Lunch{}, Map.put(lunch_params, "url", yelp_recommendation))
+    changeset = Lunch.changeset(%Lunch{}, recommend_lunch(lunch_params))
 
     case Repo.insert(changeset) do
       {:ok, lunch} ->
         conn
         |> put_status(:created)
-        |> render("show.json", lunch: lunch)
+        |> render("show.json", lunch: Repo.preload(lunch, [:votes]))
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -27,12 +27,20 @@ defmodule LunchDetectiveServer.LunchController do
     end
   end
 
-  defp yelp_recommendation do
-    List.first(Yelp.search.businesses)["image_url"]
+  defp recommend_lunch(lunch_params) do
+    recommendation = yelp_recommendation(lunch_params["search_term"])
+    lunch_params
+      |> Map.put("url", recommendation["image_url"])
+      |> Map.put("recommendation", recommendation["name"])
+      |> Map.put("search_index", 0)
+  end
+
+  defp yelp_recommendation(term) do
+    List.first(Yelp.search(term).businesses)
   end
 
   def show(conn, %{"id" => id}) do
-    lunch = Repo.get!(Lunch, id)
+    lunch = Repo.get!(Lunch, id) |> Repo.preload([:votes])
     render conn, "show.json", lunch: lunch
   end
 

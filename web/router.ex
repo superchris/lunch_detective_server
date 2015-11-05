@@ -25,5 +25,6 @@ defmodule LunchDetectiveServer.Router do
     resources "/lunch_groups", LunchGroupController
     resources "/lunchers", LuncherController
     resources "/lunches", LunchController
+    resources "/votes", VoteController
   end
 end

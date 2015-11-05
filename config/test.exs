@@ -15,7 +15,5 @@ config :phoenix, :stacktrace_depth, 20
 # Configure your database
 config :lunch_detective_server, LunchDetectiveServer.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
   database: "lunch_detective_server_test",
   pool: Ecto.Adapters.SQL.Sandbox
