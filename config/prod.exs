@@ -62,6 +62,3 @@ config :lunch_detective_server, LunchDetectiveServer.Repo,
   adapter: Ecto.Adapters.Postgres,
   pool_size: 10,
   url: System.get_env("DATABASE_URL")
-# Finally import the config/prod.secret.exs
-# which should be versioned separately.
-import_config "prod.secret.exs"
