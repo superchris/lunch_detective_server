@@ -35,5 +35,6 @@ defmodule LunchDetectiveServer.Endpoint do
     key: "_lunch_detective_server_key",
     signing_salt: "PY0dTc6+"
 
+  plug CORSPlug
   plug LunchDetectiveServer.Router
 end

@@ -32,6 +32,7 @@ defmodule LunchDetectiveServer.Mixfile do
     [{:phoenix, "~> 0.17"},
     {:httpoison, "~> 0.7.2"},
     {:exyelp, ">= 0.0.2"},
+    {:cors_plug, "~> 0.1.4"},
     {:hexate,  ">= 0.5.0"},
      {:phoenix_ecto, "~> 1.1"},
      {:postgrex, ">= 0.0.0"},
