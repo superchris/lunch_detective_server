@@ -60,7 +60,7 @@ config :logger, level: :info
 # Configure your database
 config :lunch_detective_server, LunchDetectiveServer.Repo,
   adapter: Ecto.Adapters.Postgres,
-  pool_size: 10
+  pool_size: 10,
   url: System.get_env("DATABASE_URL")
 # Finally import the config/prod.secret.exs
 # which should be versioned separately.
