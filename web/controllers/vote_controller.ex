@@ -4,6 +4,7 @@ defmodule LunchDetectiveServer.VoteController do
   alias LunchDetectiveServer.Vote
   alias LunchDetectiveServer.Lunch
   alias LunchDetectiveServer.LunchView
+  alias LunchDetectiveServer.Yelp
 
   plug :scrub_params, "vote" when action in [:create, :update]
 
@@ -17,7 +18,7 @@ defmodule LunchDetectiveServer.VoteController do
 
     case Repo.insert(changeset) do
       {:ok, vote} ->
-        lunch = Lunch.vote_on(vote)
+        lunch = Lunch.vote_on(vote, &Yelp.recommendation/2)
         LunchDetectiveServer.Endpoint.broadcast! "lunch:updates", "lunch", LunchView.render("show.json", %{lunch: lunch})
         conn
         |> put_status(:created)

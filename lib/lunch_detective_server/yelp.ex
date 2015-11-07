@@ -16,4 +16,9 @@ defmodule LunchDetectiveServer.Yelp do
   def search(term) do
     Exyelp.search %{term: term, location: "Cincinnati"}, creds
   end
+
+  def recommendation(term, index) do
+    Enum.at search(term).businesses, index
+  end
+
 end

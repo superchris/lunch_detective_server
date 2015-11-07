@@ -13,7 +13,7 @@ defmodule LunchDetectiveServer.LunchController do
   end
 
   def create(conn, %{"lunch" => lunch_params}) do
-    changeset = Lunch.changeset(%Lunch{}, recommend_lunch(lunch_params))
+    changeset = Lunch.changeset(%Lunch{}, Lunch.recommend_lunch(lunch_params, &Yelp.recommendation/2, 0))
 
     case Repo.insert(changeset) do
       {:ok, lunch} ->
@@ -25,18 +25,6 @@ defmodule LunchDetectiveServer.LunchController do
         |> put_status(:unprocessable_entity)
         |> render(LunchDetectiveServer.ChangesetView, "error.json", changeset: changeset)
     end
-  end
-
-  defp recommend_lunch(lunch_params) do
-    recommendation = yelp_recommendation(lunch_params["search_term"])
-    lunch_params
-      |> Map.put("url", recommendation["image_url"])
-      |> Map.put("recommendation", recommendation["name"])
-      |> Map.put("search_index", 0)
-  end
-
-  defp yelp_recommendation(term) do
-    List.first(Yelp.search(term).businesses)
   end
 
   def show(conn, %{"id" => id}) do

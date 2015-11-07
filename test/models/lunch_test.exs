@@ -18,12 +18,34 @@ defmodule LunchDetectiveServer.LunchTest do
   end
 
   test "vote_on" do
-    lunch = Lunch.changeset(%Lunch{}, %{title: "Hey"}) |> Repo.insert!
-    vote = Vote.changeset(%Vote{}, %{yes_no: true, lunch_id: lunch.id, email: "foo@bar.com", name: "Fred"})
+    lunch = Lunch.changeset(%Lunch{}, %{title: "Hey", search_index: 0, search_term: "wut"}) |> Repo.insert!
+    vote = Vote.changeset(%Vote{}, %{yes_no: false, lunch_id: lunch.id, email: "foo@bar.com", name: "Fred"})
       |> Repo.insert!
-    IO.inspect(lunch)
-    IO.inspect(Lunch.vote_on(vote))
-    assert true
+    lunch = Lunch.vote_on(vote, &fake_yelp/2)
+    assert lunch.search_index == 1
+    assert lunch.recommendation == "wut"
+    assert lunch.url == "two"
+  end
+
+  def fake_yelp(term, index) do
+    recs = [%{"image_url" => "one", "name" => term}, %{"image_url" => "two", "name" => term}]
+    Enum.at recs, index
+  end
+
+  test "recommend lunch" do
+    lunch = Lunch.changeset(%Lunch{}, %{title: "Hey", search_term: "Food"}) |> Repo.insert!
+    recommended = Lunch.recommend_lunch(lunch, &fake_yelp/2, 1)
+    assert recommended["url"] == "two"
+    assert recommended["recommendation"] == "Food"
+    assert recommended["search_index"] == 1
+  end
+
+  test "recommend lunch with no index" do
+    lunch = Lunch.changeset(%Lunch{}, %{title: "Hey", search_term: "Food"}) |> Repo.insert!
+    recommended = Lunch.recommend_lunch(lunch, &fake_yelp/2)
+    assert recommended["url"] == "one"
+    assert recommended["recommendation"] == "Food"
+    assert recommended["search_index"] == 0
   end
 
 end

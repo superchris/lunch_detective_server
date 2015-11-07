@@ -1,6 +1,8 @@
 defmodule LunchDetectiveServer.Lunch do
   use LunchDetectiveServer.Web, :model
   alias LunchDetectiveServer.Repo
+  alias LunchDetectiveServer.Lunch
+  alias LunchDetectiveServer.Vote
 
   schema "lunches" do
     field :title, :string
@@ -14,11 +16,34 @@ defmodule LunchDetectiveServer.Lunch do
   end
 
   @required_fields ~w(title)
-  @optional_fields ~w(url lunch_group_id recommendation)
+  @optional_fields ~w(url lunch_group_id recommendation search_index search_term)
 
-  def vote_on(vote) do
-    lunch = Repo.get!(LunchDetectiveServer.Lunch, vote.lunch_id) |> Repo.preload([:votes])
-    lunch
+  def vote_on(vote = %Vote{yes_no: true}, yelp_recommender) do
+    Repo.get!(Lunch, vote.lunch_id) |> Repo.preload([:votes])
+  end
+
+  def vote_on(vote = %Vote{yes_no: false}, yelp_recommender) do
+    lunch = Repo.get!(Lunch, vote.lunch_id) |> Repo.preload([:votes])
+    changeset = Lunch.changeset(lunch, recommend_lunch(lunch, yelp_recommender, lunch.search_index + 1))
+    Repo.update!(changeset)
+  end
+
+  def recommend_lunch(lunch, yelp_recommender), do: recommend_lunch(lunch, yelp_recommender, 0)
+
+  def recommend_lunch(lunch = %Lunch{}, yelp_recommender, index) do
+    recommend_lunch(mapify(lunch), yelp_recommender, index)
+  end
+
+  def recommend_lunch(lunch_params = %{"search_term" => term}, yelp_recommender, index) do
+    recommendation = yelp_recommender.(term, index)
+    lunch_params
+      |> Map.put("url", recommendation["image_url"])
+      |> Map.put("recommendation", recommendation["name"])
+      |> Map.put("search_index", index)
+  end
+
+  defp mapify(lunch) do
+    Enum.reduce(Map.from_struct(lunch), %{}, fn({key, value}, m) -> Map.put(m, Atom.to_string(key), value) end)
   end
 
   @doc """
